@@ -1,0 +1,176 @@
+#https://stripe.com/docs/api/usage_records?lang=curl
+
+swagger: '2.0'
+info:
+  version: '2019-02-19'
+  title: Stripe Usage Records
+  description: "**Usage Record**"
+host: api.stripe.com
+basePath: /v1
+
+securityDefinitions:
+  basicAuth:
+    type: apiKey
+    name: key
+    in: query
+
+    
+security:
+- basicAuth: []
+
+schemes:
+  - https
+  
+consumes:
+  - application/x-www-form-urlencoded
+produces:
+  - application/json
+  
+paths: 
+  /subscription_items/{subscription_item}/usage_records:
+    post:
+      description: create new usage records
+      parameters:
+        - name: subscription_item
+          in: path
+          required: true
+          type: string
+          description: Unique identifier for the object.
+          
+        - name: quantity
+          in: formData
+          required: true
+          type: string
+          description: The usage quantity for the specified timestamp.
+          
+        - name: action
+          in: formData
+          required: false
+          type: string
+          description: Valid values are increment (default) or set. When using increment the specified quantity will be added to the usage at the specified timestamp. The set action will overwrite the usage quantity at that timestamp. If the subscription has billing thresholds, increment is the only allowed value.
+          enum:
+            - increment
+            - set
+          
+        - name: timestamp
+          in: formData
+          required: false
+          type: string
+          description: The timestamp for the usage event. This timestamp must be within the current billing period of the subscription of the provided subscription_item, and must not be in the future. When passing "now", Stripe records usage for the current time. Default is "now" if a value is not provided.
+      
+      responses:
+        200:
+          description: Successful
+          schema:
+            $ref: '#/definitions/usageRecord'
+            
+            
+  /subscription_items/{subscription_item}/usage_record_summaries:
+    get:
+      description: Returns the usage record object.
+      parameters:
+        - name: subscription_item
+          in: path
+          required: true
+          type: string
+          description: The ID of the subscription item this usage record contains data for.
+          
+          
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 1.
+          #minimum: 1
+          #maximum: 100
+          
+          
+        - name: ending_before
+          in: query
+          required: false
+          type: string
+          description: A cursor for use in pagination. ending_before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_bar, your subsequent call can include ending_before=obj_bar in order to fetch the previous page of the list.
+      
+      
+        - name: starting_after
+          in: query
+          required: false
+          type: string
+          description: A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list.
+      
+      responses:
+        200:
+          description: Successful
+          schema:
+            $ref: '#/definitions/usageRecordSummary'
+  
+        
+definitions:
+  usageRecord:
+    properties:
+      id:
+        type: string
+        description: Unique identifier for the object.
+      object: 
+        type: string
+        description: string, value is "usage_record"
+      livemode:
+        type: boolean
+        description: Has the value true if the object exists in live mode or the value false if the object exists in test mode.
+      quantity: 
+        type: integer
+        description: The usage quantity for the specified date.
+      subscription_item: 
+        type: string
+        description: The ID of the subscription item this usage record contains data for.
+      timestamp: 
+        type: integer
+        description: The timestamp when this usage occurred.
+        
+  usageRecordSummary:
+    properties:
+      object:
+        type: string
+        enum:
+          - list
+      url:
+        type: string
+      has_more:
+        type: boolean
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/usageRecordSummaryData'
+        
+        
+  usageRecordSummaryData:
+    properties:
+      id:
+        type: string
+        description: Unique identifier for the object.
+      object: 
+        type: string
+        description: string, value is usage_record_summary
+      invoice:
+        type: string
+        description: invoice
+      livemode:
+        type: boolean
+        description: Has the value true if the object exists in live mode or the value false if the object exists in test mode.
+      subscription_item: 
+        type: string
+        description: The ID of the subscription item this usage record contains data for.
+      total_usage:
+        type: integer
+      period:
+        type: object
+        description: time period
+        properties:
+          end:
+            type: string
+            description: ending time stamp
+          start:
+            type: string
+            description: starting time stamp
+    
+ 
