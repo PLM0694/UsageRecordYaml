@@ -1,4 +1,4 @@
-# Stripe Usage Record using Swagger Editor
+# Stripe API Usage Record Using Swagger Editor
 
 In this exercise, we explore using https://editor.swagger.io/, an API tool, to allow user to create a new subscription usage record for Stripe. For Stripe API documentation reference, see: https://stripe.com/docs/api/usage_records?lang=curl
 
